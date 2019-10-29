@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/image_process.hpp
+complex
+-
+
+/home/sjh/projects/image_process/src/image_process.cpp
+iostream
+-
+image_process.hpp
+/home/sjh/projects/image_process/src/image_process.hpp
+cmath
+-
+
+/home/sjh/projects/image_process/src/main.cpp
+image_process.hpp
+/home/sjh/projects/image_process/src/image_process.hpp
+iostream
+-
+
