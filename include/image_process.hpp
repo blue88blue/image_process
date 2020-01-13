@@ -1,9 +1,13 @@
 #ifndef  __IMAGE_PROCESS__
 #define  __IMAGE_PROCESS__
+
 #include<complex>
-#define cp complex<double>
+extern "C" {
+#include "image_tool.h"
+}
 using namespace std;
 
+#define cp complex<double>
 
 
 // 结构体的长度必定为最大成员长度的倍数，以4个字节为一个单元
@@ -40,14 +44,25 @@ struct tagRGBQUAD
 };
 
 
+struct Circle
+{
+    int center_line; 
+    int center_column;
+    int r;
+    int score;
+};
+
 class Bmp_Image
 {
     private:
-        unsigned char *image_data;
+        
         tagBITMAPFILEHEADER  BITMAPFILEHEADER;
+        
+    public:
+        unsigned char *image_data;
         tagBITMAPINFOHEADER  BITMAPINFOHEADER;
         tagRGBQUAD *RGBQUAD;
-    public:
+
         bool read(char *image_dir);//图片读取
         bool save(char *image_name);//图片保存
         bool pseudo_color();//伪彩色化
@@ -56,13 +71,20 @@ class Bmp_Image
         unsigned char* idft(cp* frequence_data,char *image_name);//傅里叶逆变换
         bool save_frequence_image(cp* frequence_data,char *range_name);//保存频域幅度图
         cp* motion_blur(cp* frequence_data, double a,double b, double T);//运动模糊
-        cp* wiener(cp* frequence_data, double a,double b, double T, double K);//运动模糊复原
-        int* conver_coordinates(int line,int cloumn);//频域的坐标中心化操作
+        cp* wiener_deblur(cp* frequence_data, double a,double b, double T, double K);//运动模糊复原
+        bool binarization(int threshold); //二值化
+        bool K3M1();  //骨架提取 二值图
+        bool corrosion();  //腐蚀  二值图
+        bool expansion();  //膨胀  二值图
+        bool edge();    //边缘提取  二值图
+        void roberts();
+        void conv();
+        Circle* Hough_circles(int r_min, int r_max, int threshold, int circles_number); // 霍夫圆变换
+        void circle(Circle a);
 };
 
 
-
-unsigned char* HSV2RGB(int H, float S, float V);
+unsigned char* HSV2RGB(int H, float S, float V);//颜色空间转换
 
 
 

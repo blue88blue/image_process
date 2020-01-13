@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sjh/projects/image_process
+CMAKE_SOURCE_DIR = /home/sjh/Project/image_process
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sjh/projects/image_process/build
+CMAKE_BINARY_DIR = /home/sjh/Project/image_process/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/sjh/projects/image_process/build/CMakeFiles /home/sjh/projects/image_process/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sjh/Project/image_process/build/CMakeFiles /home/sjh/Project/image_process/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/sjh/projects/image_process/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sjh/Project/image_process/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -150,6 +150,33 @@ src/image_process.cpp.s:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/image_process.cpp.s
 .PHONY : src/image_process.cpp.s
 
+src/image_tool.o: src/image_tool.c.o
+
+.PHONY : src/image_tool.o
+
+# target to build an object file
+src/image_tool.c.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/image_tool.c.o
+.PHONY : src/image_tool.c.o
+
+src/image_tool.i: src/image_tool.c.i
+
+.PHONY : src/image_tool.i
+
+# target to preprocess a source file
+src/image_tool.c.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/image_tool.c.i
+.PHONY : src/image_tool.c.i
+
+src/image_tool.s: src/image_tool.c.s
+
+.PHONY : src/image_tool.s
+
+# target to generate assembly for a file
+src/image_tool.c.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/image_tool.c.s
+.PHONY : src/image_tool.c.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -189,6 +216,9 @@ help:
 	@echo "... src/image_process.o"
 	@echo "... src/image_process.i"
 	@echo "... src/image_process.s"
+	@echo "... src/image_tool.o"
+	@echo "... src/image_tool.i"
+	@echo "... src/image_tool.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

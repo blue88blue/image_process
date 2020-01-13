@@ -9,18 +9,24 @@
 ../include/image_process.hpp
 complex
 -
+image_tool.h
+../include/image_tool.h
 
-/home/sjh/projects/image_process/src/image_process.cpp
+../include/image_tool.h
+
+/home/sjh/Project/image_process/src/image_process.cpp
 iostream
 -
 image_process.hpp
-/home/sjh/projects/image_process/src/image_process.hpp
+/home/sjh/Project/image_process/src/image_process.hpp
 cmath
 -
+string.h
+-
 
-/home/sjh/projects/image_process/src/main.cpp
+/home/sjh/Project/image_process/src/main.cpp
 image_process.hpp
-/home/sjh/projects/image_process/src/image_process.hpp
+/home/sjh/Project/image_process/src/image_process.hpp
 iostream
 -
 

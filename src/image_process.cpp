@@ -1,6 +1,7 @@
 #include <iostream>
 #include "image_process.hpp"
 #include <cmath>
+#include<string.h>
 using namespace std;
 
 //读取bmp图像
@@ -23,7 +24,6 @@ bool Bmp_Image::read(char *image_dir)
 
     fread(image_data,(int)BITMAPINFOHEADER\
     .biHight*(int)(BITMAPINFOHEADER.biWidth),1,fp);
-    // cout<<BITMAPINFOHEADER.biWidth<< BITMAPINFOHEADER.biHight<<endl;
     
     fclose(fp);//关闭文件
     return true;
@@ -43,7 +43,7 @@ bool Bmp_Image::save(char *image_name)
     fwrite(image_data,(int)BITMAPINFOHEADER.\
     biHight*(int)(BITMAPINFOHEADER.biWidth),1,fp);
 
-    cout<< "save "<<image_name<< " OK!"<<endl;
+    cout<< "save OK! "<<image_name<<endl;
     fclose(fp);//关闭文件
     delete[] image_data;
 
@@ -104,7 +104,6 @@ bool Bmp_Image::histogram_balanced()
         }
     }
     return true;
-
 }
 
 //二维离散傅里叶变换
@@ -124,8 +123,9 @@ cp* Bmp_Image::dft()
             {
                 temp = cos(2*M_PI*column*n/BITMAPINFOHEADER.biWidth)\
                 -sin(2*M_PI*column*n/BITMAPINFOHEADER.biWidth)*1i;
+
                 *(frequence_data_1+column+line*(BITMAPINFOHEADER.biWidth))+=\
-                (double)*(image_data+n+line*(BITMAPINFOHEADER.biWidth))*temp;
+                (double)*(image_data+n+line*(BITMAPINFOHEADER.biWidth))*pow(-1,n+line+2)*temp;
             }
         }
     }
@@ -185,7 +185,7 @@ unsigned char* Bmp_Image::idft(cp* frequence_data, char *image_name)
                 +sin(2*M_PI*line*n/BITMAPINFOHEADER.biHight)*1i;
                 pixel_temp += *(frequence_data_1+column+n*BITMAPINFOHEADER.biWidth)*temp;
             }
-            *(image+column+line*BITMAPINFOHEADER.biWidth)=pixel_temp.real()\
+            *(image+column+line*BITMAPINFOHEADER.biWidth)=pixel_temp.real()*pow(-1,column+line+2)\
             /BITMAPINFOHEADER.biHight;
         }
     }
@@ -200,7 +200,7 @@ unsigned char* Bmp_Image::idft(cp* frequence_data, char *image_name)
     fwrite(RGBQUAD,4,256,fp);
     fwrite(image,(int)BITMAPINFOHEADER.\
     biHight*(int)(BITMAPINFOHEADER.biWidth),1,fp);
-    cout<< "save "<<image_name<< " OK!"<<endl;
+    cout<< "save OK! "<<image_name<<endl;
     fclose(fp);
 
     return image;
@@ -220,18 +220,26 @@ cp* Bmp_Image::motion_blur(cp* frequence_data, double a,double b, double T)
     {
         for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
         {
-            uv = conver_coordinates(line,column);
-            v=*(uv);//纵
-            u=*(uv+1);//横
+            u = line-BITMAPINFOHEADER.biHight/2.0;
+            v = column-BITMAPINFOHEADER.biWidth/2.0;
             temp=M_PI*((double)u*a+(double)v*b);
-            H = T*sin(temp)/temp*(cos(temp)-sin(temp)*1i);//退化函数
-            // H=exp(-(u*u+v*v)/500);//高斯
-            cout<<u<<endl;
+            if(fabs(temp)<1e-5)
+            {
+                if (temp>0)
+                    temp=1e-5;
+                else
+                    temp=-1e-5;
+            }
+
+            H = T*sin(temp)/temp*(cos(temp)-sin(temp)*1i);//运动模糊退化函数
+            // H=exp(-(u*u+v*v)/800);//高斯低通
+            // H = exp(-0.0025*pow((u*u+v*v),5.0/6.0));//大气湍流退化函数
+
             if (H.real()==0 && H.imag()==0)
             {
                 *(frequence_motion_blur+column+line*(BITMAPINFOHEADER.biWidth))=\
                 *(frequence_data+column+line*(BITMAPINFOHEADER.biWidth));
-                break;
+                continue;
             }
             *(frequence_motion_blur+column+line*(BITMAPINFOHEADER.biWidth))=\
             H**(frequence_data+column+line*(BITMAPINFOHEADER.biWidth));
@@ -241,7 +249,7 @@ cp* Bmp_Image::motion_blur(cp* frequence_data, double a,double b, double T)
 }
 
 //运动模糊复原
-cp* Bmp_Image::wiener(cp* frequence_data, double a,double b, double T, double K)
+cp* Bmp_Image::wiener_deblur(cp* frequence_data, double a,double b, double T, double K)
 {
     cp* deblur =new cp[BITMAPINFOHEADER.biHight*(BITMAPINFOHEADER.biWidth)];
     double temp=0,H_mode=0;
@@ -253,19 +261,25 @@ cp* Bmp_Image::wiener(cp* frequence_data, double a,double b, double T, double K)
     {
         for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
         {
-            uv = conver_coordinates(line,column);
-            v=*(uv);//纵
-            u=*(uv+1);//横
+            u = line-BITMAPINFOHEADER.biHight/2.0;
+            v = column-BITMAPINFOHEADER.biWidth/2.0;
             temp=M_PI*((double)u*a+(double)v*b);
-            H = T*sin(temp)/temp*(cos(temp)-sin(temp)*1i);//退化函数
+            if(fabs(temp)<1e-5)
+            {
+                if (temp>0)
+                    temp=1e-5;
+                else
+                    temp=-1e-5;
+            }
+            H = T*sin(temp)/temp*(cos(temp)-sin(temp)*1i);//运动模糊退化函数
             H_mode = sqrt(H.real()*H.real()+H.imag()*H.imag());//退化函数的模
             H_mode *= H_mode;
 
-            if (H.real()==0 && H.imag()==0)
+            if (fabs(H.real())<1e-6 && fabs(H.imag())<1e-6)
             {
                 *(deblur+column+line*(BITMAPINFOHEADER.biWidth))=\
                 *(frequence_data+column+line*(BITMAPINFOHEADER.biWidth));
-                break;
+                continue;
             }
             *(deblur+column+line*(BITMAPINFOHEADER.biWidth))=\
             *(frequence_data+column+line*(BITMAPINFOHEADER.biWidth))/H*H_mode/(H_mode+K);
@@ -288,6 +302,7 @@ bool Bmp_Image::save_frequence_image(cp* frequence_data,char *range_name)
     {
         temp[i] = sqrt(frequence_data[i].real()*frequence_data[i].real()+\
         frequence_data[i].imag()*frequence_data[i].imag());
+        temp[i] = log2(temp[i]+1);//对数变换
         if (temp[i] >max)
         {
             max=temp[i]; 
@@ -303,48 +318,379 @@ bool Bmp_Image::save_frequence_image(cp* frequence_data,char *range_name)
         return 0;
     fwrite(&BITMAPFILEHEADER, 14,1, fp);
     fwrite(&BITMAPINFOHEADER, 40, 1, fp);
-    fwrite(RGBQUAD,sizeof(RGBQUAD),256,fp);
+    fwrite(RGBQUAD,4,256,fp);
     fwrite(range_image,(int)BITMAPINFOHEADER.\
     biHight*(int)BITMAPINFOHEADER.biWidth,1,fp);
-    cout<< "save "<<range_name<< "OK!"<<endl;
+    cout<< "save OK! "<<range_name<< endl;
     fclose(fp);//关闭文件
+
     delete[] range_image;
+    delete[] temp;
     return true;
 }
 
 
-
-
-//坐标转换，第一个为纵坐标
-int* Bmp_Image::conver_coordinates(int line,int column)
+//二值化
+bool Bmp_Image::binarization(int threshold)
 {
-    int* uv = new int[2];
-    int mid_w=BITMAPINFOHEADER.biWidth/2;
-    int mid_h=BITMAPINFOHEADER.biHight/2;
-    if (line<=mid_h && column<=mid_w)//3
+    int line=0,column=0;
+    int temp=0;
+
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)
     {
-        uv[0]=line;
-        uv[1]=column;
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
+        {
+            temp = *(image_data+column+line*(BITMAPINFOHEADER.biWidth));
+            if(temp>=threshold)
+            {
+                *(image_data+column+line*(BITMAPINFOHEADER.biWidth))=WHITE;
+            }
+            else
+            {
+                *(image_data+column+line*(BITMAPINFOHEADER.biWidth))=BLACK;
+            }
+        }
     }
-    else if(line<=mid_h && column>mid_w)//4
+}
+
+/**************骨架提取算法******************/
+/*************对边缘噪声敏感，二值化前应做平滑处理******图像中白块越少，迭代速度越快***********/
+bool Bmp_Image::K3M1()  
+{
+    int deleted_points=0;
+    int iteration=0;
+        
+    while(1)
     {
-        uv[0]=line;
-        uv[1]=column-(BITMAPINFOHEADER.biWidth);
+        deleted_points=H_search(image_data, iteration, BITMAPINFOHEADER.biWidth, BITMAPINFOHEADER.biHight);//水平扫描
+    
+        iteration++;
+        if(iteration==5)
+        {
+        iteration=1;
+        if(deleted_points==0)break;
+        } 
+        deleted_points=0;
+        
+        deleted_points=V_search(image_data, iteration, BITMAPINFOHEADER.biWidth, BITMAPINFOHEADER.biHight);//垂直扫描
+        
+        iteration++;
+        if(iteration==5)
+        {
+        iteration=1;
+        if(deleted_points==0)break;
+        } 
+        deleted_points=0;
     }
-    else if(line>mid_h && column<=mid_w)//1
-    {
-        uv[0]=line-(BITMAPINFOHEADER.biHight);
-        uv[1]=column;
-    }
-    else
-    {
-        uv[0]=line-(BITMAPINFOHEADER.biHight);
-        uv[1]=column-(BITMAPINFOHEADER.biWidth);
-    }
-    return uv;
 }
 
 
+//腐蚀
+bool Bmp_Image::corrosion()
+{
+    int line=0,column=0;
+    int count=0,temp_line=0,temp_column=0;
+    int kernel_line[]={-1,-1,-1, 0, 1,1,1, 0};
+    int kernel_column[]={-1,0,1, 1, 1,0,-1, -1};
+    int num=8;
+    // int kernel_line[]={-1,0,1,0};
+    // int kernel_column[]={0,1,0,-1};
+    // int num=4;
+
+    unsigned char* img = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)       
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)   
+        {	
+            if(*(image_data+column+line*(BITMAPINFOHEADER.biWidth)) == WHITE)
+            {
+                for(count=0;count<num;count++)
+                {
+                    temp_line = line+kernel_line[count];
+                    temp_column = column+kernel_column[count];
+                    if ((temp_line<0 || temp_line>=BITMAPINFOHEADER.biHight)||(temp_column<0||temp_column>=BITMAPINFOHEADER.biWidth))
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+                        break;
+                    }
+                    if( *(image_data+(line+kernel_line[count])*BITMAPINFOHEADER.biWidth+(column+kernel_column[count])) == BLACK)
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=WHITE;//记下要腐蚀的点
+                        break;
+                    }
+                }
+                if(count ==num )*(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+            }
+        }
+    }
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
+        {
+            if (*(img+BITMAPINFOHEADER.biWidth*line+column)==WHITE)
+            {
+                *(image_data+column+line*(BITMAPINFOHEADER.biWidth))=BLACK;
+            }
+        }
+    }
+    delete[] img;
+    return true;
+}
+
+//膨胀
+bool Bmp_Image::expansion()
+{
+    int line=0,column=0;
+    int count=0,temp_line=0,temp_column=0;
+    int kernel_line[]={-1,-1,-1, 0, 1,1,1, 0};
+    int kernel_column[]={-1,0,1, 1, 1,0,-1, -1};
+    int num=8;
+    // int kernel_line[]={-1,0,1,0};
+    // int kernel_column[]={0,1,0,-1};
+    // int num=4;
+
+    unsigned char* img = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)       
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)   
+        {	
+            if(*(image_data+column+line*(BITMAPINFOHEADER.biWidth)) == BLACK)
+            {
+                for(count=0;count<num;count++)
+                {
+                    temp_line = line+kernel_line[count];
+                    temp_column = column+kernel_column[count];
+                    if ((temp_line<0 || temp_line>=BITMAPINFOHEADER.biHight)||(temp_column<0||temp_column>=BITMAPINFOHEADER.biWidth))
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+                        break;
+                    }
+                    if( *(image_data+(line+kernel_line[count])*BITMAPINFOHEADER.biWidth+(column+kernel_column[count])) == WHITE)
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=WHITE;//记下要腐蚀的点
+                        break;
+                    }
+                }
+                if(count ==num )*(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+            }
+        }
+    }
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
+        {
+            if (*(img+BITMAPINFOHEADER.biWidth*line+column)==WHITE)
+            {
+                *(image_data+column+line*(BITMAPINFOHEADER.biWidth))=WHITE;
+            }
+        }
+    }
+    delete[] img;
+    return true;
+}
+
+//边缘提取
+bool Bmp_Image::edge()
+{
+    int line=0,column=0;
+    int count=0,temp_line=0,temp_column=0;
+    int kernel_line[]={-1,-1,-1, 0, 1,1,1, 0};
+    int kernel_column[]={-1,0,1, 1, 1,0,-1, -1};
+    int num=8;
+    // int kernel_line[]={-1,0,1,0};
+    // int kernel_column[]={0,1,0,-1};
+    // int num=4;
+
+    unsigned char* img = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)       
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)   
+        {	
+            if(*(image_data+column+line*(BITMAPINFOHEADER.biWidth)) == BLACK)
+            {
+                for(count=0;count<num;count++)
+                {
+                    temp_line = line+kernel_line[count];
+                    temp_column = column+kernel_column[count];
+                    if ((temp_line<0 || temp_line>=BITMAPINFOHEADER.biHight)||(temp_column<0||temp_column>=BITMAPINFOHEADER.biWidth))
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+                        break;
+                    }
+                    if( *(image_data+(line+kernel_line[count])*BITMAPINFOHEADER.biWidth+(column+kernel_column[count])) == WHITE)
+                    {
+                        *(img+BITMAPINFOHEADER.biWidth*line+column)=WHITE;
+                        break;
+                    }
+                }
+                if(count ==num )*(img+BITMAPINFOHEADER.biWidth*line+column)=BLACK;
+            }
+        }
+    }
+    for(line=0; line<BITMAPINFOHEADER.biHight; line++)
+    {
+        for(column=0; column<BITMAPINFOHEADER.biWidth; column++)
+        {
+            *(image_data+column+line*(BITMAPINFOHEADER.biWidth)) = *(img+BITMAPINFOHEADER.biWidth*line+column);
+        }
+    }
+    delete[] img;
+    return true;
+}
+
+
+//霍夫圆变换
+//r_min: 半径最小值
+//r_max:半径最大值
+Circle* Bmp_Image::Hough_circles(int r_min, int r_max, int threshold, int circles_number)
+{
+    int line,column;
+    Circle *circles = new Circle[r_max-r_min+1];
+    Circle *result_circles = new Circle[circles_number];
+    int  *vote_img = new  int[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+    int r = 0, i=0 ,j=0 , max_score;
+    
+    for (r=r_min; r<=r_max; r++)
+    {
+        memset(vote_img,0,BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth*sizeof(int));//数组清零，重新投票
+        for(line=0;line<BITMAPINFOHEADER.biHight;line++)
+        {
+            for(column=0;column<BITMAPINFOHEADER.biWidth;column++)
+            {
+                if(*(image_data+column+line*(BITMAPINFOHEADER.biWidth)) >100 )
+                {     
+                    Bresenham_Circle(vote_img, line , column , r,  BITMAPINFOHEADER.biHight, BITMAPINFOHEADER.biWidth);
+                }
+            }
+        }
+/*************************************************************/
+        /*if(r==55)
+        {
+                //保存图像
+            char *image_name = (char*)"../vote_img.bmp";
+            FILE *fp = fopen(image_name,"wb");
+            if (fp==0)
+                return 0;
+            fwrite(&BITMAPFILEHEADER, 14,1, fp);
+            fwrite(&BITMAPINFOHEADER, 40, 1, fp);
+            fwrite(RGBQUAD,4,256,fp);
+            fwrite(vote_img,(int)BITMAPINFOHEADER.\
+            biHight*(int)(BITMAPINFOHEADER.biWidth),1,fp);
+            cout<< "save OK! "<<image_name<<endl;
+            fclose(fp);
+        }*/
+/***************************************************************/       
+        circles[r-r_min].r = r;//半径
+        max_score = 0;
+        //找到投票矩阵中分数最大的点
+        for(line=0;line<BITMAPINFOHEADER.biHight;line++)
+        {
+            for(column=0;column<BITMAPINFOHEADER.biWidth;column++)
+            {
+                if(*(vote_img+column+line*(BITMAPINFOHEADER.biWidth)) > max_score)
+                {
+                    max_score = *(vote_img+column+line*(BITMAPINFOHEADER.biWidth));
+                    circles[r-r_min].center_line = line;
+                    circles[r-r_min].center_column = column;
+                    circles[r-r_min].score = *(vote_img+column+line*(BITMAPINFOHEADER.biWidth));
+                }
+            }
+        }
+    }
+
+    int max_index=0;
+    for (i=0; i<circles_number; i++)
+    {
+        //找出分数前几名，并且大于阈值的圆
+        max_score = 0;
+        for (j=0; j<=r_max-r_min; j++)
+        {
+            if(circles[j].score > max_score)
+            {
+                max_score = circles[j].score;
+                max_index = j;
+            }
+        }
+        result_circles[i] = circles[max_index];
+        cout<< circles[max_index].center_line<<" "<<circles[max_index].center_column<<" "<<circles[max_index].r<<" "<<circles[max_index].score<<endl;   //输出
+        circles[max_index].score = 0;
+    }
+    
+    
+    delete[] vote_img;
+    delete[] circles;
+    return result_circles;
+}
+
+
+/*************roberts算子 梯度计算**********/
+void Bmp_Image::roberts()
+{
+    int line=0, column=0, num_x=0, num_y=0;
+    unsigned char* edge = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+
+    for(line=1;line<BITMAPINFOHEADER.biHight-1;line++)       
+    {
+        for(column=1;column<BITMAPINFOHEADER.biWidth-1;column++)   
+            {		   	
+                num_x = *(image_data + (line*BITMAPINFOHEADER.biWidth) + column) - *(image_data + ((line+1)*BITMAPINFOHEADER.biWidth) + column+1);
+                num_y = *(image_data + (line*BITMAPINFOHEADER.biWidth) + column+1) - *(image_data + ((line+1)*BITMAPINFOHEADER.biWidth) + column);
+                
+                *(edge + (line*BITMAPINFOHEADER.biWidth) + column) = sqrt(num_x*num_x + num_y*num_y);
+            }
+    }
+
+    memcpy(image_data,edge,BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth*sizeof(unsigned char));
+    delete[] edge;
+}
+
+/************拉普拉斯算子  二阶微分 **********/
+void Bmp_Image::conv()
+{
+    int kernel_line[]={-1,-1,-1, 0, 1,1,1, 0};
+    int kernel_column[]={-1,0,1, 1, 1,0,-1, -1};
+    int line=0, column=0, count=0;
+    int	num=0; 
+    unsigned char* edge = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+
+    for(line=1;line<BITMAPINFOHEADER.biHight-1;line++)       
+        {
+        for(column=1;column<BITMAPINFOHEADER.biWidth-1;column++)   
+        {		   
+            for(count=0;count<8;count++)
+            {
+                num += *(image_data + ((line+kernel_line[count])*BITMAPINFOHEADER.biWidth) + column+kernel_column[count]);
+            }
+                        
+                        num = (8* *(image_data + (line*BITMAPINFOHEADER.biWidth) + column) - num);
+                    
+                    if(num<0)num=0;
+                    if(num>255)num=255;
+                    *(edge + (line*BITMAPINFOHEADER.biWidth) + column)	= num;
+                    num=0;
+        }
+    }
+    memcpy(image_data,edge,BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth*sizeof(unsigned char));
+    delete[] edge;
+}
+
+//画圆
+void Bmp_Image::circle(Circle a)
+{
+    unsigned char* midimg = new unsigned char[BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth];
+    memcpy(midimg,image_data,BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth*sizeof(unsigned char));
+
+    draw_Circle(midimg, a.center_line , a.center_column , a.r, BITMAPINFOHEADER.biHight ,BITMAPINFOHEADER.biWidth);
+    RGBQUAD[100].rgbRed = 255;
+    RGBQUAD[100].rgbGreen = 255;
+    RGBQUAD[100].rgbBlue = 0;
+
+    memcpy(image_data,midimg,BITMAPINFOHEADER.biHight*BITMAPINFOHEADER.biWidth*sizeof(unsigned char));
+    delete[] midimg;
+}
 
 
 
@@ -383,3 +729,8 @@ unsigned char* HSV2RGB(int H, float S, float V)
 
     return rgb;
 }
+
+
+
+
+

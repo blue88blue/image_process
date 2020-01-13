@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/image_tool.h
+
+/home/sjh/Project/image_process/src/image_tool.c
+image_tool.h
+/home/sjh/Project/image_process/src/image_tool.h
+string.h
+/home/sjh/Project/image_process/src/string.h
+math.h
+/home/sjh/Project/image_process/src/math.h
+

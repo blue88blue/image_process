@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sjh/projects/image_process
+CMAKE_SOURCE_DIR = /home/sjh/Project/image_process
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sjh/projects/image_process/build
+CMAKE_BINARY_DIR = /home/sjh/Project/image_process/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/main.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/main.dir/flags.make
 
 CMakeFiles/main.dir/src/main.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sjh/projects/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/main.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/main.cpp.o -c /home/sjh/projects/image_process/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sjh/Project/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/main.dir/src/main.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/main.cpp.o -c /home/sjh/Project/image_process/src/main.cpp
 
 CMakeFiles/main.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/src/main.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sjh/projects/image_process/src/main.cpp > CMakeFiles/main.dir/src/main.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sjh/Project/image_process/src/main.cpp > CMakeFiles/main.dir/src/main.cpp.i
 
 CMakeFiles/main.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/main.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sjh/projects/image_process/src/main.cpp -o CMakeFiles/main.dir/src/main.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sjh/Project/image_process/src/main.cpp -o CMakeFiles/main.dir/src/main.cpp.s
 
 CMakeFiles/main.dir/src/main.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/main.dir/src/main.cpp.o.provides.build: CMakeFiles/main.dir/src/main.
 
 CMakeFiles/main.dir/src/image_process.cpp.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/image_process.cpp.o: ../src/image_process.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sjh/projects/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/image_process.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/image_process.cpp.o -c /home/sjh/projects/image_process/src/image_process.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sjh/Project/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/src/image_process.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/main.dir/src/image_process.cpp.o -c /home/sjh/Project/image_process/src/image_process.cpp
 
 CMakeFiles/main.dir/src/image_process.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/main.dir/src/image_process.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sjh/projects/image_process/src/image_process.cpp > CMakeFiles/main.dir/src/image_process.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sjh/Project/image_process/src/image_process.cpp > CMakeFiles/main.dir/src/image_process.cpp.i
 
 CMakeFiles/main.dir/src/image_process.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/main.dir/src/image_process.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sjh/projects/image_process/src/image_process.cpp -o CMakeFiles/main.dir/src/image_process.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sjh/Project/image_process/src/image_process.cpp -o CMakeFiles/main.dir/src/image_process.cpp.s
 
 CMakeFiles/main.dir/src/image_process.cpp.o.requires:
 
@@ -105,19 +105,45 @@ CMakeFiles/main.dir/src/image_process.cpp.o.provides: CMakeFiles/main.dir/src/im
 CMakeFiles/main.dir/src/image_process.cpp.o.provides.build: CMakeFiles/main.dir/src/image_process.cpp.o
 
 
+CMakeFiles/main.dir/src/image_tool.c.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/src/image_tool.c.o: ../src/image_tool.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sjh/Project/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/main.dir/src/image_tool.c.o"
+	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/image_tool.c.o   -c /home/sjh/Project/image_process/src/image_tool.c
+
+CMakeFiles/main.dir/src/image_tool.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/image_tool.c.i"
+	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/sjh/Project/image_process/src/image_tool.c > CMakeFiles/main.dir/src/image_tool.c.i
+
+CMakeFiles/main.dir/src/image_tool.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/image_tool.c.s"
+	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/sjh/Project/image_process/src/image_tool.c -o CMakeFiles/main.dir/src/image_tool.c.s
+
+CMakeFiles/main.dir/src/image_tool.c.o.requires:
+
+.PHONY : CMakeFiles/main.dir/src/image_tool.c.o.requires
+
+CMakeFiles/main.dir/src/image_tool.c.o.provides: CMakeFiles/main.dir/src/image_tool.c.o.requires
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/image_tool.c.o.provides.build
+.PHONY : CMakeFiles/main.dir/src/image_tool.c.o.provides
+
+CMakeFiles/main.dir/src/image_tool.c.o.provides.build: CMakeFiles/main.dir/src/image_tool.c.o
+
+
 # Object files for target main
 main_OBJECTS = \
 "CMakeFiles/main.dir/src/main.cpp.o" \
-"CMakeFiles/main.dir/src/image_process.cpp.o"
+"CMakeFiles/main.dir/src/image_process.cpp.o" \
+"CMakeFiles/main.dir/src/image_tool.c.o"
 
 # External object files for target main
 main_EXTERNAL_OBJECTS =
 
 ../bin/main: CMakeFiles/main.dir/src/main.cpp.o
 ../bin/main: CMakeFiles/main.dir/src/image_process.cpp.o
+../bin/main: CMakeFiles/main.dir/src/image_tool.c.o
 ../bin/main: CMakeFiles/main.dir/build.make
 ../bin/main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sjh/projects/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable ../bin/main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sjh/Project/image_process/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable ../bin/main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -127,6 +153,7 @@ CMakeFiles/main.dir/build: ../bin/main
 
 CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/main.cpp.o.requires
 CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/image_process.cpp.o.requires
+CMakeFiles/main.dir/requires: CMakeFiles/main.dir/src/image_tool.c.o.requires
 
 .PHONY : CMakeFiles/main.dir/requires
 
@@ -135,6 +162,6 @@ CMakeFiles/main.dir/clean:
 .PHONY : CMakeFiles/main.dir/clean
 
 CMakeFiles/main.dir/depend:
-	cd /home/sjh/projects/image_process/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sjh/projects/image_process /home/sjh/projects/image_process /home/sjh/projects/image_process/build /home/sjh/projects/image_process/build /home/sjh/projects/image_process/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/sjh/Project/image_process/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sjh/Project/image_process /home/sjh/Project/image_process /home/sjh/Project/image_process/build /home/sjh/Project/image_process/build /home/sjh/Project/image_process/build/CMakeFiles/main.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/main.dir/depend
 
